@@ -229,16 +229,16 @@ local type = {
 
     ["transformation"] = function(source,item, itemRemove)
         SetTimeout(Config.TimeToTransformation, function()
+            local xPlayer = ESX.GetPlayerFromId(source)
+            local Quantity = xPlayer.getInventoryItem(itemRemove).count
             if PlayerInZoneFarmT[source] then
-                local xPlayer = ESX.GetPlayerFromId(source)
                 if xPlayer.getInventoryItem(item) ~= nil then
-                    if xPlayer.getInventoryItem(item).count <= Config.MaxItemToTransformation then
+                    if Quantity == 0 then                        
+                        TriggerClientEvent('esx:showNotification', source, '~r~Pas assez de item pour traiter...')
+                    else
                         xPlayer.removeInventoryItem(itemRemove, 1)
                         xPlayer.addInventoryItem(item, 1)
                         StartType("transformation", source, item,itemRemove)
-                    else
-                        PlayerInZoneFarmT[source] = false
-                        xPlayer.showNotification("~r~Vous portez trop de chose sur vous !")
                     end
                 end
             end
@@ -252,8 +252,8 @@ local type = {
                 if xPlayer.getInventoryItem(item) ~= nil then
                     if xPlayer.getInventoryItem(item).count ~= 0 then
                         xPlayer.removeInventoryItem(item, 1)
-                        xPlayer.showNotification("Vous avez gagner ~g~"..Job[xPlayer.job.name].price.."~s~$ !")
-                        xPlayer.addMoney(tonumer(Job[xPlayer.job.name].price))
+                        TriggerClientEvent('esx:showNotification', source, "Vous avez gagner ~g~"..Job[xPlayer.job.name].price.."~s~$ !")    
+                        xPlayer.addMoney(tonumber(Job[xPlayer.job.name].price))
                         StartType("sell", source, item)
                     end
                 end
